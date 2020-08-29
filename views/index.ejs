@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server page</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
+      integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/mystyle.css" />
+
+    <style>
+      body {
+        height: 100vh;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .content {
+        display: flex;
+        /* flex-direction: column; */
+        align-items: center;
+        justify-content: center;
+      }
+
+      form {
+        width: 60vw;
+        padding: 1rem !important;
+      }
+
+      .hero.is-small .hero-body {
+        padding: 0.7rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <h1 class="title is-1 is-spaced">Add a new project</h1> -->
+
+    <section class="hero is-primary is-small is-center">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">Database Connector</h1>
+          <h2 class="subtitle">Add a new project</h2>
+        </div>
+      </div>
+    </section>
+
+    <div class="content">
+      <form action="/projects" method="POST" enctype="multipart/form-data">
+        <div class="field">
+          <label class="label">Nom</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="name"
+              placeholder="nom du projet"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Langages</label>
+          <div class="control">
+            <input class="input" type="text" name="langages" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Catégories</label>
+          <div class="control">
+            <div class="select">
+              <select name="category" id="category">
+                <option value="tous">tous</option>
+                <option value="react">React</option>
+                <option value="front-end">front-end developpement</option>
+                <option value="back-end">front-end developpement</option>
+                <option value="UI-design">Web</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <textarea
+              name="description"
+              class="textarea"
+              placeholder="Textarea"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="file is-centered is-small is-boxed is-success has-name">
+            <label class="file-label">
+              <input class="file-input" type="file" name="imgUrl" />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label"> Choose an image</span>
+              </span>
+              <span class="file-name">
+                Screen Shot 2017-07-29 at 15.54.25.png
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="checkbox">
+            <input type="checkbox" name="finie" />
+            Terminé
+          </label>
+        </div>
+
+        <button type="submit" class="button is-primary is-center">
+          Envoyer
+        </button>
+      </form>
+    </div>
+  </body>
+</html>
