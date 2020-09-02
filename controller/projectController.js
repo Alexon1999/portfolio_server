@@ -47,8 +47,11 @@ const postNewProject = async (req, res) => {
   let newProject = new Project({
     ...req.body,
     finie: !!req.body.finie ? true : false,
+    react: !!req.body.react ? true : false,
     imgUrl: `/uploads/${file.name}`,
   });
+
+  console.log(newProject);
 
   try {
     newProject = await newProject.save();

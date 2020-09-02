@@ -21,7 +21,7 @@ const projectsSchema = new Schema(
       type: String,
       required: true,
     },
-    url: {
+    link: {
       type: String,
       required: true,
     },
@@ -32,6 +32,14 @@ const projectsSchema = new Schema(
     category: {
       type: String,
       required: true,
+    },
+    react: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    backend: {
+      type: String,
     },
     finie: {
       type: Boolean,

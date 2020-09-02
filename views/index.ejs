@@ -14,9 +14,9 @@
 
     <style>
       body {
-        height: 100vh;
         width: 100%;
-        overflow: hidden;
+        /* height: 100vh; */
+        /* overflow: hidden; */
       }
 
       .content {
@@ -66,7 +66,36 @@
         <div class="field">
           <label class="label">Langages</label>
           <div class="control">
-            <input class="input" type="text" name="langages" />
+            <input
+              class="input"
+              type="text"
+              name="langages"
+              placeholder="html,css,etc"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Link de Projet</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="link"
+              placeholder="http://google.com"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">githubRepo URL</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="gitRepoUrl"
+              placeholder="http://github.com"
+            />
           </div>
         </div>
 
@@ -75,13 +104,32 @@
           <div class="control">
             <div class="select">
               <select name="category" id="category">
-                <option value="tous">tous</option>
-                <option value="react">React</option>
                 <option value="front-end">front-end developpement</option>
-                <option value="back-end">front-end developpement</option>
-                <option value="UI-design">Web</option>
+                <option value="back-end">back-end developpement</option>
+                <option value="fullstack">Fullstack developpement</option>
+                <option value="UI-design">Web Design</option>
+                <option value="autres">autres</option>
               </select>
             </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="checkbox">
+            <input type="checkbox" name="react" />
+            React
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="label">Backend Environnements</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="backend"
+              placeholder="NodeJs,Firebase,php,mongoDb,SQL,postgreSql "
+            />
           </div>
         </div>
 
@@ -91,7 +139,7 @@
             <textarea
               name="description"
               class="textarea"
-              placeholder="Textarea"
+              placeholder="utiliser MARKDOWN (lightweight markup language) qui peut être converti en HTML/XHTML "
             ></textarea>
           </div>
         </div>
@@ -104,7 +152,7 @@
                 <span class="file-icon">
                   <i class="fas fa-upload"></i>
                 </span>
-                <span class="file-label"> Choose an image</span>
+                <span class="file-label"> Choisir une image</span>
               </span>
               <span class="file-name">
                 Screen Shot 2017-07-29 at 15.54.25.png
@@ -125,5 +173,14 @@
         </button>
       </form>
     </div>
+
+    <script>
+      const fileName = document.querySelector('.file-name');
+      const fileInput = document.querySelector('.file-input');
+
+      fileInput.addEventListener('change', (e) => {
+        fileName.innerText = e.target.files[0].name;
+      });
+    </script>
   </body>
 </html>
