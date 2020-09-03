@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const ConnectDb = require('./db/db');
 const projectRoutes = require('./router/projectRoutes');
+const { router: emailRoutes } = require('./router/emailRoutes');
 
 require('dotenv').config();
 
@@ -31,6 +32,8 @@ app.get('/', (req, res) => {
 app.use(express.static('public'));
 
 app.use('/projects', projectRoutes);
+
+app.use('/post-email', emailRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on Port ${port}`));
