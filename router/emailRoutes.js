@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
 
 const sendMail = (email, subject, text, html, cb) => {
   const options = {
-    service: 'gmai',
+    service: 'gmail',
     port: 465,
     auth: {
       user: 'alexonportfolio@gmail.com',
