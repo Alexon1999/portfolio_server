@@ -13,26 +13,30 @@ router.post('/', (req, res) => {
     <h3>Message</h3>
     <p>${req.body.message}</p>
   `;
-
+  //? quand on appelle sendMail , dedans il va retourner le callback function en l'appelant puis cela va repondre le request handler
   sendMail(
     'alexonportfolio@gmail.com',
     'Portfolio Contact',
-    'portfolio',
+    'someone contacts you from your portfolio site',
     output,
     (err, data) => {
       if (err) {
-        return res
-          .status(500)
-          .json({ message: err.message || 'Internal Error' });
+        return res.status(500).json({
+          message:
+            process.env.NODE_ENV != 'production'
+              ? err.message
+              : 'message non envoyé',
+          sended: false,
+        });
       }
-      return res.json({ message: 'Email sent!!!!!' });
+      return res.json({ message: 'message envoyé avec succès', sended: true });
     }
   );
 });
 
 const sendMail = (email, subject, text, html, cb) => {
   const options = {
-    service: 'gmail',
+    service: 'gmai',
     port: 465,
     auth: {
       user: 'alexonportfolio@gmail.com',
