@@ -2,9 +2,7 @@ const Project = require('../models/projects');
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().sort({
-      createdAt: -1,
-    });
+    const projects = await Project.find();
 
     res.json(projects);
   } catch (err) {
