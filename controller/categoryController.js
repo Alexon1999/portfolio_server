@@ -8,7 +8,7 @@ const getProjectsByCategory = async (req, res) => {
     switch (category) {
       case 'tous':
         project = await Project.find().sort({
-          createdAt: -1,
+          createdAt: 1,
         });
         break;
       case 'react':
