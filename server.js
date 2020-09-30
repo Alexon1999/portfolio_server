@@ -19,8 +19,8 @@ ConnectDb();
 // );
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // disabled for security on local
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  req.header('Access-Control-Allow-Origin', '*'); // disabled for security on local
+  req.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
