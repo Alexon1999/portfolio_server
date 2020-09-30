@@ -12,10 +12,14 @@ const getProjectsByCategory = async (req, res) => {
         });
         break;
       case 'react':
-        project = await Project.find({ react: true });
+        project = await Project.find({ react: true }).sort({
+          createdAt: 1,
+        });
         break;
       default:
-        project = await Project.find({ category });
+        project = await Project.find({ category }).sort({
+          createdAt: 1,
+        });
     }
 
     if (!project) {
