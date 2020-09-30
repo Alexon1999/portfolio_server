@@ -18,6 +18,12 @@ ConnectDb();
 //   app.listen(port, () => console.log(`Server running on Port ${port}`))
 // );
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // disabled for security on local
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 app.use(cors());
 app.use(fileUploader());
 app.use(express.json());
