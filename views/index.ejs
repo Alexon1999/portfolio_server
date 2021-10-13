@@ -107,7 +107,7 @@
                 <option value="front-end">front-end developpement</option>
                 <option value="back-end">back-end developpement</option>
                 <option value="fullstack">Fullstack developpement</option>
-                <option value="UI-design">Web Design</option>
+                <option value="UI/UX Design">Web Design</option>
                 <option value="autres">autres</option>
               </select>
             </div>
@@ -175,10 +175,10 @@
     </div>
 
     <script>
-      const fileName = document.querySelector('.file-name');
-      const fileInput = document.querySelector('.file-input');
+      const fileName = document.querySelector(".file-name");
+      const fileInput = document.querySelector(".file-input");
 
-      fileInput.addEventListener('change', (e) => {
+      fileInput.addEventListener("change", (e) => {
         fileName.innerText = e.target.files[0].name;
       });
     </script>
