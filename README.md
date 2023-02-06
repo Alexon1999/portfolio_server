@@ -1,4 +1,4 @@
-# Deployment on Heroku
+# Deployment on Heroku with **Basic Dynos**
 
 ```bash
 $ heroku login
