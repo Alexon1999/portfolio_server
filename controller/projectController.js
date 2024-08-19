@@ -1,13 +1,50 @@
-const Project = require('../models/projects');
+const Project = require("../models/projects");
+
+const NodeCache = require("node-cache");
+const projectCache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find();
+    const { category, orderby, order } = req.query;
+
+    // Generate a cache key based on query parameters
+    const cacheKey = `projects-${category || "all"}-${orderby || "default"}-${
+      order || "desc"
+    }`;
+    const cachedProjects = projectCache.get(cacheKey);
+
+    // If cached data exists, return it
+    if (cachedProjects) {
+      return res.json(cachedProjects);
+    }
+
+    let query = {};
+    if (category) {
+      query.category = category;
+    }
+
+    // Build the sort object
+    let sort = {};
+    if (orderby) {
+      const orderFields = orderby.split(",");
+      const orderDirections = (order || "").split(",");
+
+      orderFields.forEach((field, index) => {
+        const direction = orderDirections[index] === "asc" ? 1 : -1;
+        sort[field] = direction;
+      });
+    }
+
+    // Execute the query with sorting
+    const projects = await Project.find(query).sort(sort);
+
+    // Cache the result before sending it to the client
+    projectCache.set(cacheKey, projects);
 
     res.json(projects);
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ msg: 'problem with server' });
+    res.status(500).json({ msg: "Problem with server" });
   }
 };
 
@@ -24,13 +61,13 @@ const getOneProject = async (req, res) => {
     return res.json(project);
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ msg: 'problem with server' });
+    res.status(500).json({ msg: "problem with server" });
   }
 };
 
 const postNewProject = async (req, res) => {
   if (req.files === null) {
-    return res.status(400).json({ msg: 'No file uploaded' });
+    return res.status(400).json({ msg: "No file uploaded" });
   }
 
   const file = req.files.imgUrl;
@@ -95,7 +132,7 @@ const updateProject = async (req, res) => {
     res.json(updated);
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ msg: 'problem with server' });
+    res.status(500).json({ msg: "problem with server" });
   }
 };
 
@@ -111,10 +148,10 @@ const deleteProject = async (req, res) => {
 
     await Project.findByIdAndRemove(req.params.id);
 
-    return res.json({ msg: 'Succesfully deleted' });
+    return res.json({ msg: "Succesfully deleted" });
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ msg: 'A Problem with the server' });
+    res.status(500).json({ msg: "A Problem with the server" });
   }
 };
 

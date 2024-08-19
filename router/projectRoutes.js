@@ -1,5 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const { isAuthenticated } = require("../middlewares/auth");
 
 const {
   getAllProjects,
@@ -7,20 +8,16 @@ const {
   postNewProject,
   updateProject,
   deleteProject,
-} = require('../controller/projectController');
+} = require("../controller/projectController");
 
-const { getProjectsByCategory } = require('../controller/categoryController');
+router.get("/", getAllProjects);
 
-router.get('/', getAllProjects);
+router.get("/:id", getOneProject);
 
-router.get('/:id', getOneProject);
+router.post("/", isAuthenticated, postNewProject);
 
-router.post('/', postNewProject);
+router.put("/:id", isAuthenticated, updateProject);
 
-router.put('/:id', updateProject);
-
-router.delete('/:id', deleteProject);
-
-router.get('/category/:category', getProjectsByCategory);
+router.delete("/:id", isAuthenticated, deleteProject);
 
 module.exports = router;
