@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // mongoose.Schema : it's a contructor function
@@ -29,22 +29,21 @@ const projectsSchema = new Schema(
       type: String,
       required: true,
     },
-    category: {
-      type: String,
-      required: true,
-    },
-    react: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
+    // Reference to the Category schema
+    categories: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
     backend: {
       type: String,
     },
-    finie: {
-      type: Boolean,
+    statut: {
+      type: String,
+      enum: ["to_do", "in_progress", "finish"],
       required: true,
-      default: false,
+      default: "to_do",
     },
   },
   { timestamps: true }
@@ -52,6 +51,6 @@ const projectsSchema = new Schema(
 
 // mongodb will purialised the 'Blog' => 'blogs'
 // it should be singular
-const Project = mongoose.model('Project', projectsSchema);
+const Project = mongoose.model("Project", projectsSchema);
 
 module.exports = Project;

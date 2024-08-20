@@ -1,14 +1,15 @@
 const Project = require("../models/projects");
+const mongoose = require("mongoose");
 
 const NodeCache = require("node-cache");
 const projectCache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
 
 const getAllProjects = async (req, res) => {
   try {
-    const { category, orderby, order } = req.query;
+    const { categories, orderby, order } = req.query;
 
     // Generate a cache key based on query parameters
-    const cacheKey = `projects-${category || "all"}-${orderby || "default"}-${
+    const cacheKey = `projects-${categories || "all"}-${orderby || "default"}-${
       order || "desc"
     }`;
     const cachedProjects = projectCache.get(cacheKey);
@@ -18,9 +19,11 @@ const getAllProjects = async (req, res) => {
       return res.json(cachedProjects);
     }
 
+    // Build the query object
     let query = {};
-    if (category) {
-      query.category = category;
+    if (categories) {
+      // Support filtering by multiple categories
+      query.categories = { $in: categories.split(",") };
     }
 
     // Build the sort object
@@ -35,8 +38,10 @@ const getAllProjects = async (req, res) => {
       });
     }
 
-    // Execute the query with sorting
-    const projects = await Project.find(query).sort(sort);
+    // Execute the query with sorting and populate categories
+    const projects = await Project.find(query)
+      .sort(sort)
+      .populate("categories");
 
     // Cache the result before sending it to the client
     projectCache.set(cacheKey, projects);
@@ -50,7 +55,9 @@ const getAllProjects = async (req, res) => {
 
 const getOneProject = async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const project = await Project.findById(req.params.id).populate(
+      "categories"
+    );
 
     if (!project) {
       return res
@@ -66,6 +73,8 @@ const getOneProject = async (req, res) => {
 };
 
 const postNewProject = async (req, res) => {
+  // console.log("req.body", req.body);
+
   if (req.files === null) {
     return res.status(400).json({ msg: "No file uploaded" });
   }
@@ -81,17 +90,20 @@ const postNewProject = async (req, res) => {
 
   // res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
 
+  // Explicitly cast categories to ObjectId
+  const categories = req.body.categories.map((categoryId) =>
+    mongoose.Types.ObjectId(categoryId)
+  );
+
   let newProject = new Project({
     ...req.body,
-    finie: !!req.body.finie ? true : false,
-    react: !!req.body.react ? true : false,
+    categories,
     imgUrl: `/uploads/${file.name}`,
   });
 
-  console.log(newProject);
-
   try {
     newProject = await newProject.save();
+    newProject = await newProject.populate("categories").execPopulate();
 
     res.json(newProject);
   } catch (err) {
@@ -116,9 +128,7 @@ const updateProject = async (req, res) => {
 
     if (description) contactFields.description = description;
     if (name) contactFields.name = name;
-    if (finie) contactFields.finie = finie;
     if (imgUrl) contactFields.imgUrl = imgUrl;
-    if (category) contactFields.category = category;
     if (langages) contactFields.langages = langages;
 
     const updated = await Project.findByIdAndUpdate(

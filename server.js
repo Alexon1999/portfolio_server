@@ -6,6 +6,7 @@ const session = require("express-session");
 
 const ConnectDb = require("./db/db");
 const projectRoutes = require("./router/projectRoutes");
+const categoryRoutes = require("./router/categoryRoutes");
 const { router: emailRoutes } = require("./router/emailRoutes");
 const { isAuthenticated } = require("./middlewares/auth");
 const User = require("./models/users");
@@ -81,6 +82,7 @@ app.get("/", isAuthenticated, (req, res) => {
 
 app.use(express.static("public"));
 
+app.use("/categories", categoryRoutes);
 app.use("/projects", projectRoutes);
 
 app.use("/post-email", emailRoutes);
