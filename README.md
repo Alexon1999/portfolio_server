@@ -9,3 +9,9 @@ $ git push heroku master
 ```bash
 $ node scripts/createUser.js
 ```
+
+# Run migrations
+- create your own migrations with mongoose
+```bash
+$ node scripts/migrateProjects.js
+```
