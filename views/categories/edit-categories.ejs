@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Category</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
+      integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o="
+      crossorigin="anonymous" />
+    <link rel="stylesheet" href="/css/mystyle.css" />
+
+    <style>
+      body {
+        width: 100%;
+      }
+
+      .content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      form {
+        width: 60vw;
+        padding: 1rem !important;
+      }
+
+      .hero.is-small .hero-body {
+        padding: 0.7rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <div class="content">
+      <!-- The form action is set to the update route for the specific category -->
+      <form id="edit-category-form" enctype="multipart/form-data">
+        <div class="field">
+          <label class="label">Nom</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="name"
+              value="<%= category.name %>"
+              placeholder="nom de la catégorie" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <textarea
+              name="description"
+              class="textarea"
+              placeholder="utiliser MARKDOWN (lightweight markup language) qui peut être converti en HTML/XHTML ">
+<%= category.description %></textarea
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="button is-primary is-center">
+          Mettre à jour
+        </button>
+      </form>
+    </div>
+
+    <script>
+         // Inject the category data into JavaScript context
+        const category = <%- JSON.stringify(category) %>;
+
+        document.getElementById('edit-category-form').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        try {
+          const response = await fetch(`/api/categories/<%= category._id %>`, {
+            method: 'PUT',
+            body: formData
+          });
+
+          if (response.ok) {
+            // If the update is successful, redirect to /categories-view
+            window.location.href = '/categories-view';
+          } else {
+            // Handle errors if needed
+            const errorData = await response.json();
+            alert('Error updating category: ' + errorData.message);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred while updating the category.');
+        }
+      });
+    </script>
+  </body>
+</html>

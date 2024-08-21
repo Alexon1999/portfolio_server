@@ -3,13 +3,15 @@ const fileUploader = require("express-fileupload");
 const morgan = require("morgan");
 const cors = require("cors");
 const session = require("express-session");
+const methodOverride = require("method-override");
 
 const ConnectDb = require("./db/db");
-const projectRoutes = require("./router/projectRoutes");
-const categoryRoutes = require("./router/categoryRoutes");
-const { router: emailRoutes } = require("./router/emailRoutes");
+const apiRoutes = require("./router/apiRoutes");
 const { isAuthenticated } = require("./middlewares/auth");
 const User = require("./models/users");
+const Project = require("./models/projects");
+const Category = require("./models/categories");
+const { deleteCategory } = require("./controller/categoryController");
 
 require("dotenv").config();
 
@@ -39,6 +41,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(methodOverride("_method"));
 
 // Render login page
 app.get("/login", (req, res) => {
@@ -80,12 +83,43 @@ app.get("/", isAuthenticated, (req, res) => {
   res.render("index");
 });
 
+app.get("/projects-view", isAuthenticated, (req, res) => {
+  res.render("projects/index");
+});
+app.get("/projects-view/create", isAuthenticated, (req, res) => {
+  res.render("projects/create-projects");
+});
+app.get("/projects-view/:id/edit", isAuthenticated, async (req, res) => {
+  const project = await Project.findById(req.params.id).populate("categories");
+
+  if (project) {
+    return res.render("projects/edit-projects", {
+      project,
+    });
+  }
+  res.render(500).send("Project doesn't exist");
+});
+
+app.get("/categories-view", isAuthenticated, (req, res) => {
+  res.render("categories/index");
+});
+app.get("/categories-view/create", isAuthenticated, (req, res) => {
+  res.render("categories/create-categories");
+});
+app.get("/categories-view/:id/edit", isAuthenticated, async (req, res) => {
+  const category = await Category.findById(req.params.id);
+
+  if (category) {
+    return res.render("categories/edit-categories", {
+      category,
+    });
+  }
+  res.render(500).send("Category doesn't exist");
+});
+
 app.use(express.static("public"));
 
-app.use("/categories", categoryRoutes);
-app.use("/projects", projectRoutes);
-
-app.use("/post-email", emailRoutes);
+app.use("/api", apiRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on Port ${port}`));

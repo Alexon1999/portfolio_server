@@ -7,22 +7,28 @@
     <link rel="stylesheet" href="/css/mystyle.css" />
   </head>
   <body>
-    <div class="content">
-      <form action="/login" method="POST">
-        <div class="field">
-          <label class="label">Username</label>
-          <div class="control">
-            <input class="input" type="text" name="username" required />
+    <div class="container">
+      <div class="content">
+        <h1>Portfolio Manager Login Page</h1>
+      </div>
+
+      <div class="content">
+        <form action="/login" method="POST">
+          <div class="field">
+            <label class="label">Username</label>
+            <div class="control">
+              <input class="input" type="text" name="username" required />
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label class="label">Password</label>
-          <div class="control">
-            <input class="input" type="password" name="password" required />
+          <div class="field">
+            <label class="label">Password</label>
+            <div class="control">
+              <input class="input" type="password" name="password" required />
+            </div>
           </div>
-        </div>
-        <button type="submit" class="button is-primary">Login</button>
-      </form>
+          <button type="submit" class="button is-primary">Login</button>
+        </form>
+      </div>
     </div>
   </body>
 </html>

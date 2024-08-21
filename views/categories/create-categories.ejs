@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Category Create page</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
+      integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o="
+      crossorigin="anonymous" />
+    <link rel="stylesheet" href="/css/mystyle.css" />
+
+    <style>
+      body {
+        width: 100%;
+        /* height: 100vh; */
+        /* overflow: hidden; */
+      }
+
+      .content {
+        display: flex;
+        /* flex-direction: column; */
+        align-items: center;
+        justify-content: center;
+      }
+
+      form {
+        width: 60vw;
+        padding: 1rem !important;
+      }
+
+      .hero.is-small .hero-body {
+        padding: 0.7rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <div class="content">
+      <form id="category-form" enctype="multipart/form-data">
+        <div class="field">
+          <label class="label">Nom</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="name"
+              placeholder="nom de la catégorie" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <textarea
+              name="description"
+              class="textarea"
+              placeholder="utiliser MARKDOWN (lightweight markup language) qui peut être converti en HTML/XHTML "></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="button is-primary is-center">
+          Envoyer
+        </button>
+      </form>
+    </div>
+
+    <script>
+      document
+        .getElementById("category-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the form from submitting the default way
+
+          const form = event.target;
+          const formData = new FormData(form);
+
+          try {
+            const response = await fetch("/api/categories", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: formData.get("name"),
+                description: formData.get("description"),
+              }),
+            });
+
+            if (response.ok) {
+              // Redirect to the categories view page after successful creation
+              window.location.href = "/categories-view";
+            } else {
+              const errorData = await response.json();
+              alert("Error creating category: " + errorData.message);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while creating the category.");
+          }
+        });
+    </script>
+  </body>
+</html>

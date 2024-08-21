@@ -3,19 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Server page</title>
+    <title>Projects Page</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
       integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o="
       crossorigin="anonymous" />
     <link rel="stylesheet" href="/css/mystyle.css" />
+    <style>
+      .addBtn_project_div {
+        margin: 1rem;
+      }
+    </style>
   </head>
   <body>
-    <%- include('partials/navbar') %>
+    <%- include('../partials/navbar') %>
 
     <div class="container">
-      <h1>Portfolio Manager Dashboard</h1>
+      <div class="addBtn_project_div">
+        <a href="/projects-view/create" class="button is-primary"
+          >Add New Project</a
+        >
+      </div>
+      <%- include('list-projects') %>
     </div>
   </body>
 </html>

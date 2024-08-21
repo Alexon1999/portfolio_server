@@ -8,15 +8,23 @@ const getAllProjects = async (req, res) => {
   try {
     const { categories, orderby, order } = req.query;
 
-    // Generate a cache key based on query parameters
+    console.log(req.headers);
+
+    // Check if the request comes from a view by inspecting the custom header
+    const isViewRequest = req.headers["x-view-request"] === "true";
+
     const cacheKey = `projects-${categories || "all"}-${orderby || "default"}-${
       order || "desc"
     }`;
-    const cachedProjects = projectCache.get(cacheKey);
 
-    // If cached data exists, return it
-    if (cachedProjects) {
-      return res.json(cachedProjects);
+    if (!isViewRequest) {
+      // Generate a cache key based on query parameters
+      const cachedProjects = projectCache.get(cacheKey);
+
+      // If cached data exists, return it
+      if (cachedProjects) {
+        return res.json(cachedProjects);
+      }
     }
 
     // Build the query object
@@ -43,8 +51,10 @@ const getAllProjects = async (req, res) => {
       .sort(sort)
       .populate("categories");
 
-    // Cache the result before sending it to the client
-    projectCache.set(cacheKey, projects);
+    // Cache the result before sending it to the client, but only for non-view requests
+    if (!isViewRequest) {
+      projectCache.set(cacheKey, projects);
+    }
 
     res.json(projects);
   } catch (err) {
@@ -73,35 +83,38 @@ const getOneProject = async (req, res) => {
 };
 
 const postNewProject = async (req, res) => {
-  // console.log("req.body", req.body);
-
-  if (req.files === null) {
-    return res.status(400).json({ msg: "No file uploaded" });
-  }
-
-  const file = req.files.imgUrl;
-
-  file.mv(`./public/uploads/${file.name}`, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
-  });
-
-  // res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
-
-  // Explicitly cast categories to ObjectId
-  const categories = req.body.categories.map((categoryId) =>
-    mongoose.Types.ObjectId(categoryId)
-  );
-
-  let newProject = new Project({
-    ...req.body,
-    categories,
-    imgUrl: `/uploads/${file.name}`,
-  });
-
+  console.log("req.body", req.body);
   try {
+    if (req.files === null) {
+      return res.status(400).json({ msg: "No file uploaded" });
+    }
+
+    const file = req.files.imgUrl;
+
+    file.mv(`./public/uploads/${file.name}`, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+    });
+
+    // res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
+
+    // Explicitly cast categories to ObjectId
+    let categories_list = [];
+    const categories = req.body.categories;
+    if (categories) {
+      if (typeof categories == "string") categories_list.push(categories);
+      else if (Array.isArray(categories)) categories_list = categories;
+    }
+    categories_list.map((categoryId) => mongoose.Types.ObjectId(categoryId));
+
+    let newProject = new Project({
+      ...req.body,
+      categories: categories_list,
+      imgUrl: `/uploads/${file.name}`,
+    });
+
     newProject = await newProject.save();
     newProject = await newProject.populate("categories").execPopulate();
 
@@ -113,36 +126,61 @@ const postNewProject = async (req, res) => {
 };
 
 const updateProject = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const project = await Project.findById(req.params.id);
-
-    const contactFields = {};
-
-    if (!project) {
-      return res
-        .status(404)
-        .json({ msg: `Not Found a project with this id ${req.params.id}` });
+    // Check if a file is uploaded
+    let imgUrl;
+    if (req.files && req.files.imgUrl) {
+      const file = req.files.imgUrl;
+      file.mv(`./public/uploads/${file.name}`, (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send(err);
+        }
+      });
+      imgUrl = `/uploads/${file.name}`;
     }
 
-    const { description, name, finie, imgUrl, category, langages } = req.body;
+    // Explicitly cast categories to ObjectId
+    let categories_list = [];
+    const categories = req.body.categories;
+    if (categories) {
+      if (typeof categories == "string") categories_list.push(categories);
+      else if (Array.isArray(categories)) categories_list = categories;
+    }
+    categories_list.map((categoryId) => mongoose.Types.ObjectId(categoryId));
 
-    if (description) contactFields.description = description;
-    if (name) contactFields.name = name;
-    if (imgUrl) contactFields.imgUrl = imgUrl;
-    if (langages) contactFields.langages = langages;
+    // Find the project by ID and update it
+    let updatedProject = await Project.findById(id);
 
-    const updated = await Project.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: contactFields,
-      },
-      { new: true }
-    );
+    if (!updatedProject) {
+      return res.status(404).json({ msg: "Project not found" });
+    }
 
-    res.json(updated);
+    // Update the project fields
+    updatedProject.name = req.body.name || updatedProject.name;
+    updatedProject.langages = req.body.langages || updatedProject.langages;
+    updatedProject.link = req.body.link || updatedProject.link;
+    updatedProject.gitRepoUrl =
+      req.body.gitRepoUrl || updatedProject.gitRepoUrl;
+    updatedProject.backend = req.body.backend || updatedProject.backend;
+    updatedProject.description =
+      req.body.description || updatedProject.description;
+    updatedProject.statut = req.body.statut || updatedProject.statut;
+    updatedProject.categories = categories_list.length
+      ? categories_list
+      : updatedProject.categories;
+    if (imgUrl) updatedProject.imgUrl = imgUrl;
+
+    // Save the updated project
+    updatedProject = await updatedProject.save();
+    updatedProject = await updatedProject.populate("categories").execPopulate();
+
+    res.json(updatedProject);
   } catch (err) {
-    console.log(err.message);
-    res.status(500).json({ msg: "problem with server" });
+    console.error(err.message);
+    return res.status(500).send("Server Error");
   }
 };
 

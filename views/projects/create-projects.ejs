@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Create page</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
+      integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o="
+      crossorigin="anonymous" />
+    <link rel="stylesheet" href="/css/mystyle.css" />
+
+    <style>
+      body {
+        width: 100%;
+        /* height: 100vh; */
+        /* overflow: hidden; */
+      }
+
+      .content {
+        display: flex;
+        /* flex-direction: column; */
+        align-items: center;
+        justify-content: center;
+      }
+
+      form {
+        width: 60vw;
+        padding: 1rem !important;
+      }
+
+      .hero.is-small .hero-body {
+        padding: 0.7rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <div class="content">
+      <form id="project-form" enctype="multipart/form-data">
+        <div class="field">
+          <label class="label">Nom</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="name"
+              placeholder="nom du projet" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Langages</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="langages"
+              placeholder="html,css,etc" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Lien du Projet</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="link"
+              placeholder="http://google.com" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">githubRepo URL</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="gitRepoUrl"
+              placeholder="http://github.com" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Catégories</label>
+          <div class="control">
+            <div class="select is-multiple">
+              <select name="categories" id="categories" multiple disabled>
+                <option>Loading...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Backend Environnements</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              name="backend"
+              placeholder="NodeJs,Firebase,php,mongoDb,SQL,postgreSql " />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <textarea
+              name="description"
+              class="textarea"
+              placeholder="utiliser MARKDOWN (lightweight markup language) qui peut être converti en HTML/XHTML "></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="file is-centered is-small is-boxed is-success has-name">
+            <label class="file-label">
+              <input class="file-input" type="file" name="imgUrl" />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload"></i>
+                </span>
+                <span class="file-label"> Choisir une image</span>
+              </span>
+              <span class="file-name">
+                Screen Shot 2017-07-29 at 15.54.25.png
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Statut</label>
+          <div class="control">
+            <div class="select">
+              <select name="statut" id="statut">
+                <option value="to_do">À faire</option>
+                <option value="in_progress">En cours</option>
+                <option value="finish">Terminé</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="button is-primary is-center">
+          Envoyer
+        </button>
+      </form>
+    </div>
+
+    <script>
+      const fileName = document.querySelector(".file-name");
+      const fileInput = document.querySelector(".file-input");
+
+      fileInput.addEventListener("change", (e) => {
+        fileName.innerText = e.target.files[0].name;
+      });
+
+      // Fetch categories from the server and populate the select element
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const categoriesSelect = document.getElementById("categories");
+
+          // Clear the initial "Loading..." option
+          categoriesSelect.innerHTML = "";
+
+          // Fetch categories from the server
+          const response = await fetch("/api/categories");
+          const categories = await response.json();
+
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category._id; // Use the category ID as the value
+            option.textContent = category.name;
+            categoriesSelect.appendChild(option);
+          });
+
+          // Enable the select dropdown once categories are loaded
+          categoriesSelect.disabled = false;
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          // Optionally, handle the error by showing a message to the user
+          categoriesSelect.innerHTML =
+            "<option>Error loading categories</option>";
+        }
+      });
+
+      // Handle form submission
+      document
+        .getElementById("project-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the form from submitting the default way
+
+          const form = event.target;
+          const formData = new FormData(form);
+
+          const selectedCategories = Array.from(
+            document.getElementById("categories").selectedOptions
+          ).map((option) => option.value);
+
+          try {
+            const response = await fetch("/api/projects", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              // Redirect to the projects view page after successful creation
+              window.location.href = "/projects-view";
+            } else {
+              const errorData = await response.json();
+              alert("Error creating project: " + errorData.message);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while creating the project.");
+          }
+        });
+    </script>
+  </body>
+</html>

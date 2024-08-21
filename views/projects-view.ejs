@@ -10,12 +10,22 @@
       integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o="
       crossorigin="anonymous" />
     <link rel="stylesheet" href="/css/mystyle.css" />
+    <style>
+      .addBtn_project_div {
+        margin: 1rem;
+      }
+    </style>
   </head>
   <body>
     <%- include('partials/navbar') %>
 
     <div class="container">
-      <h1>Portfolio Manager Dashboard</h1>
+      <div class="addBtn_project_div">
+        <a href="/projects-view/create" class="button is-primary"
+          >Add New Project</a
+        >
+      </div>
+      <%- include('list-projects') %>
     </div>
   </body>
 </html>

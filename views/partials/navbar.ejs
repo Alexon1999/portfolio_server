@@ -1,0 +1,67 @@
+<!-- Navbar Styles -->
+<style>
+  .navbar {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+  }
+
+  .navbar-brand .title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .navbar-menu {
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
+
+  .navbar-item {
+    color: white;
+    font-weight: bold;
+  }
+
+  .navbar-item:hover {
+    background-color: #275aa8;
+    color: white;
+  }
+
+  .navbar-burger {
+    color: white;
+  }
+
+  .navbar-burger:hover {
+    background-color: #275aa8;
+  }
+</style>
+
+<!-- Navbar HTML -->
+<nav class="navbar hero is-primary">
+  <a href="/">
+    <h1 class="title">Portfolio Manager</h1>
+  </a>
+
+  <div class="">
+    <a href="/projects-view" class="button is-small">
+      <span class="icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </span>
+      <span>Projects</span>
+    </a>
+    <a href="/categories-view" class="button is-small">
+      <span class="icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </span>
+      <span>Categories</span>
+    </a>
+    <a href="/logout" class="button is-danger is-small">
+      <span class="icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </span>
+      <span>Logout</span>
+    </a>
+  </div>
+</nav>
