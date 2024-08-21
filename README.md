@@ -18,4 +18,4 @@ $ git push heroku master
 ```
 
 2. Connect your Github Repository to your Heroku Project
-It will automatically update whenever there is a new code changes
+It will automatically update whenever there is a new code changes on your Github Master Branch.
