@@ -9,7 +9,7 @@ $ node scripts/createUser.js
 $ node scripts/migrateProjects.js
 ```
 
-# Deployment on Heroku with **Basic Dynos**
+# Automatic Deployment on Heroku with **Basic Dynos**
 
 1. Manually Push to the heroku remote Repository
 
@@ -18,6 +18,12 @@ $ heroku login
 $ git push heroku master
 ```
 
-2. Connect your Github Repository to your Heroku Project.
+2. Automatic Deploys
+   To Enables a chosen branch to be automatically deployed to this app.
 
-It will automatically update whenever there is a new code changes on your Github Master Branch.
+   - We need to Connect your Github Repository on your Heroku Project. In the "Deployment method" section, select GitHub.
+   - Enable Automatic Deploys
+
+   This setup will automatically deploys whenever there is a new code changes on your Github Master Branch.
+   
+   **Recommendation:** This is a CD pipeline given bu Heroku but make sure you have CI pipeline configured on your repo.
