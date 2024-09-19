@@ -26,4 +26,4 @@ $ git push heroku master
 
    This setup will automatically deploys whenever there is a new code changes on your Github Master Branch.
    
-   **Recommendation:** This is a CD pipeline given bu Heroku but make sure you have CI pipeline configured on your repo.
+   **Recommendation:** This is a CD pipeline given buy Heroku but make sure you have CI pipeline configured on your repo.
