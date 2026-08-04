@@ -1,4 +1,19 @@
 services:
+  traefik:
+    image: traefik:v3.1
+    container_name: portfolio_server_traefik
+    command:
+      - --providers.file.filename=/etc/traefik/dynamic.yml
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+    ports:
+      - "81:80"
+    depends_on:
+      - app
+    volumes:
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    restart: unless-stopped
+
   app:
     build:
       context: .
@@ -11,8 +26,6 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       MINIO_BUCKET: portfolio-images
-    ports:
-      - "5000:5000"
     depends_on:
       - minio
     restart: unless-stopped

@@ -1,0 +1,13 @@
+http:
+  routers:
+    portfolio-app:
+      entryPoints:
+        - web
+      rule: PathPrefix(`/`)
+      service: portfolio-app
+
+  services:
+    portfolio-app:
+      loadBalancer:
+        servers:
+          - url: http://app:5000
