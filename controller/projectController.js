@@ -1,5 +1,9 @@
 const Project = require("../models/projects");
 const mongoose = require("mongoose");
+const {
+  uploadProjectImage,
+  getProjectImageObject,
+} = require("../services/minioStorage");
 
 const NodeCache = require("node-cache");
 const projectCache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
@@ -82,21 +86,50 @@ const getOneProject = async (req, res) => {
   }
 };
 
+const getProjectImage = async (req, res) => {
+  try {
+    const { key } = req.query;
+
+    if (!key || typeof key !== "string") {
+      return res.status(400).json({ msg: "Missing image key" });
+    }
+
+    const { stream, contentType, contentLength } =
+      await getProjectImageObject(key);
+
+    res.setHeader("Content-Type", contentType);
+    if (contentLength !== undefined) {
+      res.setHeader("Content-Length", contentLength);
+    }
+
+    stream.on("error", (error) => {
+      console.error(error.message);
+      if (!res.headersSent) {
+        res.status(500).send("Failed to read image");
+      }
+    });
+
+    stream.pipe(res);
+  } catch (err) {
+    if (err && err.code === "NotFound") {
+      return res.status(404).json({ msg: "Image not found" });
+    }
+
+    console.error(err.message);
+    return res.status(500).json({ msg: "Problem with server" });
+  }
+};
+
 const postNewProject = async (req, res) => {
   console.log("req.body", req.body);
   try {
-    if (req.files === null) {
+    if (!req.files || !req.files.imgUrl) {
       return res.status(400).json({ msg: "No file uploaded" });
     }
 
     const file = req.files.imgUrl;
 
-    file.mv(`./public/uploads/${file.name}`, (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send(err);
-      }
-    });
+    const imgUrl = await uploadProjectImage(file);
 
     // res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
 
@@ -112,7 +145,7 @@ const postNewProject = async (req, res) => {
     let newProject = new Project({
       ...req.body,
       categories: categories_list,
-      imgUrl: `/uploads/${file.name}`,
+      imgUrl,
     });
 
     newProject = await newProject.save();
@@ -133,13 +166,7 @@ const updateProject = async (req, res) => {
     let imgUrl;
     if (req.files && req.files.imgUrl) {
       const file = req.files.imgUrl;
-      file.mv(`./public/uploads/${file.name}`, (err) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).send(err);
-        }
-      });
-      imgUrl = `/uploads/${file.name}`;
+      imgUrl = await uploadProjectImage(file);
     }
 
     // Explicitly cast categories to ObjectId
@@ -206,6 +233,7 @@ const deleteProject = async (req, res) => {
 module.exports = {
   getAllProjects,
   getOneProject,
+  getProjectImage,
   postNewProject,
   updateProject,
   deleteProject,

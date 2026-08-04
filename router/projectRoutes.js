@@ -5,12 +5,14 @@ const { isAuthenticated } = require("../middlewares/auth");
 const {
   getAllProjects,
   getOneProject,
+  getProjectImage,
   postNewProject,
   updateProject,
   deleteProject,
 } = require("../controller/projectController");
 
 router.get("/", getAllProjects);
+router.get("/image", getProjectImage);
 
 router.get("/:id", getOneProject);
 
